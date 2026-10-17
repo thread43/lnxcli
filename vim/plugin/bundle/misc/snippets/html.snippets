@@ -1,0 +1,107 @@
+snippet htpl
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title></title>
+	<link rel="shortcut icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="shortcut icon" href="../static/favicon.ico" />
+	<link rel="stylesheet" href="../static/common.css" />
+	<script src="../static/common.js"></script>
+	</head>
+
+	<body>
+	</body>
+	</html>
+
+
+snippet !
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title></title>
+	<link rel="shortcut icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="shortcut icon" href="../static/favicon.ico" />
+	<link rel="stylesheet" href="../static/common.css" />
+	<script src="../static/common.js"></script>
+	</head>
+
+	<body>
+	</body>
+	</html>
+
+
+# -- Vimscript
+# function! Mywrite()
+#   write!
+#   return ""
+# endfunction
+# function! Myedit()
+#   edit!
+#   return ""
+# endfunction
+#
+# -- UltiSnips script
+# `!v Mywrite()``bash ship.sh >/dev/null 2>&1``!v Myedit()`
+#
+# -- Exceptions
+#  WARNING: The file has been changed since reading it!!!
+#  Do you really want to write to it (y/n)?
+#
+#  IndexError: line number out of range
+
+
+snippet f
+	`!v MyFn()`
+
+snippet fn
+	`!v MyFn()`
+
+snippet t
+	`!v MyTime()`
+
+snippet x
+	`!v MyFnTime()`
+
+snippet ft
+	`!v MyFnTime()`
+
+snippet fnt
+	`!v MyFnTime()`
+
+
+snippet css
+	<style>
+	$1
+	</style>
+snippet csssrc
+	<link rel="stylesheet" href="$1" />
+snippet style
+	<style>
+	$1
+	</style>
+snippet stylesrc
+	<link rel="stylesheet" href="$1" />
+snippet link
+	<link rel="stylesheet" href="$1" />
+
+
+snippet js
+	<script>
+	$1
+	</script>
+snippet jssrc
+	<script src="$1"></script>
+snippet script
+	<script>
+	$1
+	</script>
+snippet scriptsrc
+	<script src="$1"></script>
+snippet a
+	<a href="" target="_blank">$1</a>

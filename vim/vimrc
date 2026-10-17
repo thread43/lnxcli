@@ -1,0 +1,1272 @@
+" -- usage
+" vi ~/.vimrc
+" source /opt/lnxcli/vim/vimrc
+" if filereadable(expand("/opt/lnxcli/vim/vimrc"))
+"  source /opt/lnxcli/vim/vimrc
+" endif
+
+
+
+" -- prerequisites
+" VIM - Vi IMproved 7.4 (2013 Aug 10, compiled Nov 17 2016 06:26:47)
+" sudo apt-get install vim vim-gtk vim-nox
+" The default vim-tiny is not compiled for system clipboard support.
+" You need to install vim-gtk and vim-nox to get clipboard support.
+" pacman -S gvim (for Arch Linux)
+" vim --version |grep "clip"
+
+
+
+" -- inherit from /etc/vim/vimrc
+" Jump to the last position when reopening a file
+"
+" E10: \ should be followed by /, ? or &
+" https://github.com/neovim/neovim/issues/1181
+"
+" if has("autocmd")
+"   set nocompatible
+"   autocmd BufReadPost *
+"     \ if line("'\"") > 1 && line("'\"") <= line("$") |
+"     \   exe "normal! g'\"" |
+"     \ endif
+" endif
+
+
+
+" -- inherit from /etc/vim/vimrc
+" Load indentation rules and plugins by filetype
+" if has("autocmd")
+"   filetype plugin indent on
+" endif
+" Indent on my own style
+" If on, Vim might give me an 8 whitespaces indentation
+filetype plugin indent off
+
+
+
+" -- test
+" http://vim.wikia.com/wiki/Change_vimrc_with_auto_reload
+" autocmd! bufwritepost .vimrc source %
+"
+" autocmd! bufwritepost vimrc source $HOME/.vimrc
+
+
+
+" -- basic settings
+syntax on           " defaults to off
+set secure          " defaults to off
+set nocompatible    " defaults to on, not Vi-compatible
+set noautochdir     " defaults to off, do not change pwd
+set noswapfile      " defaults to on
+set nobackup        " defaults to on
+set nowritebackup   " defaults to on
+set history=100     " defaults to 50
+set ttyfast         " defaults to off, for faster redrawing
+set mouse=          " defaults to '', disable the mouse, forget it
+
+
+
+" -- basic settings
+set hlsearch              " defaults to off
+set incsearch             " defaults to off
+set ignorecase            " defaults to off
+set smartcase             " defaults to off, depends on ignorecase
+" set list                " defaults to off, display whitespace
+" set listchars=trail:.   " defaults to $
+set autoindent            " defaults to off
+set smartindent           " defaults to off
+set nonumber              " defaults to off
+set norelativenumber      " defaults to off
+set laststatus=2          " defaults to 1
+set ruler                 " defaults to on
+if has('unix')
+  set list                " defaults to off, display whitespace
+  set listchars=trail:.   " defaults to $
+endif
+
+set guioptions-=m   " remove menu bar
+set guioptions-=T   " remove toolbar
+set guioptions-=r   " remove right-hand scroll bar
+set guioptions-=L   " remove left-hand scroll bar
+set backspace=indent,eol,start
+set noerrorbells
+set vb t_vb=
+
+
+
+" -- basic settings
+" for security
+if !isdirectory("/root/.tmp")
+  call mkdir("/root/.tmp", "p", 0o700)
+endif
+let $TMPDIR="/root/.tmp"
+
+
+
+" -- features
+" shortmess = shm
+set shortmess-=S  " Vim 8.1.1270, show index when without S flag
+
+
+
+" -- clipboard
+" http://vim.wikia.com/wiki/Accessing_the_system_clipboard
+" https://stackoverflow.com/q/11489428
+if has('unix')
+  set clipboard=unnamed
+  set clipboard=unnamedplus
+endif
+
+
+
+" -- cursorline
+" autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+" autocmd WinLeave * setlocal nocursorline
+" set cursorline
+" set cursorcolumn
+" https://vim.fandom.com/wiki/Highlight_current_line
+set nocursorcolumn  " defaults to off
+set nocursorline    " defaults to off
+nnoremap <F12> :set cursorline! cursorcolumn!<CR>
+
+
+
+" -- statusline
+" http://vim.wikia.com/wiki/Writing_a_valid_statusline
+" http://learnvimscriptthehardway.stevelosh.com/chapters/17.html
+" https://gist.github.com/Raimondi/526718
+" http://superuser.com/questions/345520/vim-number-of-total-buffers
+" https://stackoverflow.com/q/5375240
+" vim-pr0n-making-statuslines-that-own
+" filename_[+]___66,22__11%
+" :set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
+" :set statusline=%<%f%h%m%r%=%b\ 0x%B\ \ %l,%c%V\ %P
+" :set statusline=%<%f%=\ [%1*%M%*%n%R%H]\ %-19(%3l,%02c%03V%)%O'%02b'
+" :highlight User1 term=inverse,bold cterm=inverse,bold ctermfg=red
+" :set statusline=...%r%{VarExists('b:gzflag','\ [GZ]')}%h...
+set statusline=
+set statusline+=[%{len(filter(range(1,bufnr('$')),'buflisted(v:val)'))}-%n]
+set statusline+=%{exists('g:loaded_fugitive')?fugitive#statusline():''}
+set statusline+=\ %<%F
+set statusline+=\ [%{(&fileencoding!=''?&fileencoding:&encoding)}]
+set statusline+=\ %h%m%r%w
+set statusline+=%{exists('g:loaded_syntastic_plugin')?SyntasticStatuslineFlag():''}
+set statusline+=%=
+set statusline+=\ %-19(%L-%l,%c-%v%)
+set statusline+=\ %P
+" highlight StatusLine ctermbg=Red ctermfg=DarkGreen
+
+
+
+" -- encoding
+" http://vim.wikia.com/wiki/Working_with_Unicode
+set encoding=utf-8      " defaults to latin1, the encoding represented in mem
+set fileencoding=utf-8  " defaults to '', the encoding written to file
+set fileencodings=utf-8,gb18030,gbk,gb2312,cp936
+                        " defaults to ucs-bom, auto-detect encoding
+
+
+
+" -- tab 2 space
+" http://vim.wikia.com/wiki/Converting_tabs_to_spaces
+" :retab  " Reset all the existing tab characters
+set expandtab       " defaults to off, expand the pressed tab to space(s)
+set tabstop=4       " defaults to 8, control space number when replace tab
+set shiftwidth=2    " defaults to 8, change space number for '>>' indentation
+set softtabstop=2   " defaults to 0, make backspace treat space like tab
+set nosmarttab      " defaults to off, just insert blanks whenever
+autocmd FileType c setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType cpp setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType java setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType php setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType go setlocal nolist noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType gomod setlocal nolist noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType snippets setlocal nolist noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 nosmarttab
+autocmd FileType make setlocal nolist noexpandtab tabstop=8 shiftwidth=8 softtabstop=8 nosmarttab
+
+" https://www.reddit.com/r/vim/comments/1wzjhg/make_whitespaces_visible_except_for_go_files/
+" watch out there is a whitespace at the end
+autocmd Filetype go setlocal list listchars+=tab:\ \        " keep the last whitespace
+autocmd Filetype gomod setlocal list listchars+=tab:\ \     " keep the last whitespace
+autocmd Filetype snippets setlocal list listchars+=tab:\ \  " keep the last whitespace
+autocmd Filetype make setlocal list listchars+=tab:\ \      " keep the last whitespace
+
+
+
+" -- trailing space
+" stopping-vim-from-removing-indentation-on-empty-lines
+" how-do-i-make-vims-autoindent-not-drop-trailing-spaces
+" Open source doesn't like trailing whitespace
+"
+" inoremap <CR> <CR><Space><BS>
+" nnoremap o o<Space><BS>
+" nnoremap O O<Space><BS>
+
+
+
+" -- highlight
+" :noh
+" :let @/=''
+" nnoremap <F12> :nohlsearch<CR>
+"
+" nnoremap <F1> :set hlsearch!<CR>
+"
+" nnoremap <F1> :noh<CR>
+" nnoremap <c-s> :noh<CR>
+nnoremap <c-a> :noh<CR>
+
+
+
+" -- highlight long lines
+" http://vim.wikia.com/wiki/Highlight_long_lines
+" // how-to-setup-a-line-length-marker-in-vim-gvim
+" https://superuser.com/q/249779
+" match ErrorMsg '\%>80v.\+'
+" 2match ErrorMsg '\%81v.'
+" set cc=80
+" set colorcolumn=80
+" highlight ColorColumn ctermbg=0 ctermfg=Yellow
+" set t_Co=8,
+" 0 Black
+" 1 DarkBlue
+" 2 DarkGreen
+" 3 DarkCyan
+" 4 DarkRed
+" 5 DarkMagenta
+" 6 Brown, DarkYellow
+" 7 LightGray, LightGrey, Gray, Grey
+" This will slow Vim down when loading long line
+"
+" autocmd FileType go 2match OverLength /\%70v./
+" autocmd FileType javascript.jsx 2match OverLength /\%70v./
+" autocmd FileType python 2match OverLength /\%70v./
+"
+" highlight OverLength ctermbg=Yellow ctermfg=Grey guibg=Yellow
+" 2match OverLength /\%70v./
+"
+" call matchadd('ColorColumn', '\%81v', 100)
+"
+" highlight OverLength ctermbg=Yellow ctermfg=Grey guibg=Yellow
+" 2match OverLength /\%90v./
+
+
+
+" -- folding
+" http://bit.ly/2spygvd
+" http://vim.wikia.com/wiki/Folding
+" http://vim.wikia.com/wiki/Folding_with_Regular_Expression
+" http://vimcasts.org/episodes/how-to-fold/
+" zo (open one), zc (close one), za (toggle one)
+" zM (opne all), zR (close all), zi (toggle all)
+set foldminlines=0
+set nofoldenable
+highlight Folded ctermbg=DarkYellow
+function! ToggleFoldByCurrentSearchPattern()
+   if !&foldenable
+     set foldenable
+     set foldmethod=expr
+     set foldexpr=getline(v:lnum)!~@/
+     :normal zM
+     set foldmethod=manual
+   else
+      set nofoldenable
+   endif
+endfunction
+function! ToggleFoldByHyphenHyphenPattern()
+   if !&foldenable
+     set foldenable
+     set foldmethod=expr
+     set foldexpr=getline(v:lnum)!~'^--\ '
+     :normal zM
+     set foldmethod=manual
+   else
+      set nofoldenable
+   endif
+endfunction
+nnoremap <F6> :call ToggleFoldByCurrentSearchPattern()<CR>
+nnoremap <F7> :call ToggleFoldByHyphenHyphenPattern()<CR>
+nnoremap <Leader>z :call ToggleFoldByHyphenHyphenPattern()<CR>
+
+
+
+" -- quit
+" // How to exit the Vim editor?
+" https://stackoverflow.com/q/11828270
+" :x == ZZ but :x != :wq. :x write file iff file has changed
+"
+" Shift + z + z (ZZ)
+nnoremap ZZ :qa<CR>
+nnoremap ZA :qa<CR>
+vnoremap ZZ :qa<CR>
+vnoremap ZA :qa<CR>
+nnoremap <C-c> :q<CR>
+vnoremap <C-c> :q<CR>
+nnoremap <C-d> :bd<CR>
+vnoremap <C-d> :bd<CR>
+
+
+
+" -- refresh
+" nnoremap <F5> :bd<CR>:e#<CR>
+" vnoremap <F5> :bd<CR>:e#<CR>
+"
+" https://vi.stackexchange.com/questions/16914/how-to-drop-undo-history
+" https://github.com/mbbill/undotree/blob/master/autoload/undotree.vim
+"
+" :h clear-undo
+"
+" function! ClearUndo()
+"   :let old_undolevels = &undolevels
+"   :set undolevels=-1
+"   :exe "normal a \<BS>\<Esc>"
+"   :let &undolevels = old_undolevels
+"   :unlet old_undolevels
+" endfunction
+" nnoremap <F5> :call ClearUndo()<CR>:e!<CR>
+nnoremap <F5> :e<CR>
+vnoremap <F5> :e<CR>
+
+
+
+" -- save
+" <C-s> already taken by xfce4-terminal
+" stty -a
+" stty -ixon
+" stty ixon
+"
+" if !executable('git')
+"   inoremap <C-a> <Esc>:w<CR>
+"   nnoremap <C-a> :w<CR>
+"   vnoremap <C-a> <Esc>:w<CR>
+" else
+"   inoremap <C-a> <Esc>:w<CR>:GitGutterBufferEnable<CR>
+"   nnoremap <C-a> :w<CR>:GitGutterBufferEnable<CR>
+"   vnoremap <C-a> <Esc>:w<CR>:GitGutterBufferEnable<CR>
+" endif
+if !executable('git')
+  inoremap <C-s> <Esc>:w<CR>
+  nnoremap <C-s> :w<CR>
+  vnoremap <C-s> <Esc>:w<CR>
+else
+  inoremap <C-s> <Esc>:w<CR>:GitGutterBufferEnable<CR>
+  nnoremap <C-s> :w<CR>:GitGutterBufferEnable<CR>
+  vnoremap <C-s> <Esc>:w<CR>:GitGutterBufferEnable<CR>
+endif
+
+
+" -- omni completion
+" https://vim.fandom.com/wiki/Omni_completion
+" filetype plugin on
+" autocmd FileType c set omnifunc=ccomplete#Complete
+" autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+" autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+" autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+" autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+" autocmd FileType python set omnifunc=pythoncomplete#Complete
+" autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+set omnifunc=syntaxcomplete#Complete
+
+
+
+" -- trick
+" Disable arrow keys, forget them
+" Uncomment if you want to disable scroll screen
+"
+" nnoremap <Up>    <Nop>
+" nnoremap <Down>  <Nop>
+" nnoremap <Left>  <Nop>
+" nnoremap <Right> <Nop>
+" inoremap <Up>    <Nop>
+" inoremap <Down>  <Nop>
+" inoremap <Left>  <Nop>
+" inoremap <Right> <Nop>
+" vnoremap <Up>    <Nop>
+" vnoremap <Down>  <Nop>
+" vnoremap <Left>  <Nop>
+" vnoremap <Right> <Nop>
+
+
+
+" -- trick
+" http://vim.wikia.com/wiki/Moving_lines_up_or_down
+nnoremap <C-j> :m .+1<CR>
+nnoremap <C-k> :m .-2<CR>
+inoremap <C-j> <Esc>:m .+1<CR>gi
+inoremap <C-k> <Esc>:m .-2<CR>gi
+vnoremap <C-j> :m '>+1<CR>gv
+vnoremap <C-k> :m '<-2<CR>gv
+
+
+
+" -- trick
+" Indent and select again
+vnoremap < <gv
+vnoremap > >gv
+
+
+
+" -- trick
+" "+ needs vim-gtk support
+" 'g;', 'g,' are gone
+nnoremap , :
+vnoremap , :
+nnoremap ; "+
+vnoremap ; "+
+
+
+
+" -- trick
+" highlight and jump back
+" ` is tmux send-prefix
+nnoremap * *``
+nnoremap * *``
+nnoremap # #``
+nnoremap # #``
+
+
+
+" -- trick
+" map user-defined commands
+" E174: Command already exists: add ! to replace it
+" User defined commands must start with an uppercase letter
+command! W w
+command! Q q
+command! WQ wq
+command! BD bd
+
+
+
+" -- trick
+" copy between instances
+if has('unix')
+  vnoremap <leader>y :w! /tmp/vitmp<CR>
+  nnoremap <leader>p :r! cat /tmp/vitmp<CR>
+else
+  vnoremap <leader>y "+y
+  nnoremap <leader>p "+p
+endif
+
+
+
+" -- trick
+" delete without yanking
+" "_ is the black hole register
+" nnoremap x "_x
+" vnoremap x "_x
+nnoremap d "_d
+nnoremap D "_D
+vnoremap d "_d
+vnoremap D "_D
+
+
+
+" -- trick
+" move around quickly inside of long line
+nnoremap j gj
+nnoremap k gk
+nnoremap 0 g0
+nnoremap ^ g^
+nnoremap $ g$
+
+
+
+" -- trick
+" manage window
+" nnoremap <Leader>w <C-w>w
+" nnoremap <Leader>v <C-w>v
+" nnoremap <Leader>s <C-w>s
+nnoremap <Leader>w <C-w><C-w>
+nnoremap <Leader>v <C-w><C-v>
+nnoremap <Leader>s <C-w><C-s>
+
+
+
+" -- trick
+" Auto indent pasted text
+" Raise unexpected result when using "+p
+"
+" nnoremap p p=`]<C-o>
+" nnoremap P P=`]<C-o>
+
+
+
+" -- trick
+" Strip whitespace
+nnoremap <Leader>x :%s/\s\+$//g<CR>
+vnoremap <Leader>x :s/\s\+$//g<CR>
+
+
+
+" -- trick
+"
+" navigating-in-vims-command-mode
+" https://stackoverflow.com/q/6920943
+"
+" can-i-map-alt-key-in-vim
+" https://stackoverflow.com/q/27206531
+"
+" :help cmdline-editing
+" <C-b> <Home>
+" <C-e> <End>
+" <C-h> <BS>
+" <Del>
+" <C-w>
+" <C-u>
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
+cnoremap <C-b> <Left>
+cnoremap <C-f> <Right>
+execute "set <M-b>=\eb"
+cnoremap <M-b> <C-Left>
+execute "set <M-f>=\ef"
+cnoremap <M-f> <C-Right>
+
+
+
+" -- trick
+inoremap <F1> <C-x><C-f>
+
+
+
+" -- trick
+" Duplicate
+nnoremap <C-m> yyp
+vnoremap <C-m> yPgv
+
+
+
+" -- trick
+" Sort
+" vnoremap <F1> :sort<CR>
+"
+" vnoremap <c-s> :sort<CR>
+vnoremap <c-a> :sort<CR>
+
+
+
+" -- trick
+" merge without whitespace
+nnoremap <Leader>m gJ
+vnoremap <Leader>m gJ
+
+
+" -- trick
+" Set filetype
+" https://github.com/vim/vim/blob/master/runtime/filetype.vim
+" au BufNewFile,BufRead *.awk setf awk
+au BufNewFile,BufRead .gitignore set filetype=gitignore
+
+
+
+" -- trick
+" show statistics
+" https://stackoverflow.com/q/33699044
+nnoremap <Leader>s g<C-g>
+vnoremap <leader>s g<C-g>1gs
+
+
+
+" -- trick
+" share clipboard
+if !has('unix')
+  nnoremap y "+y
+  vnoremap y "+y
+  nnoremap p "+p
+  nnoremap P "+P
+endif
+
+
+
+" -- functions
+" :call functioname
+function! MyInit()
+  :execute "NERDTreeToggle"
+  :execute "normal! \<c-w>\<c-w>"
+endfunction
+
+function! Mywrite()
+  write!
+  return ""
+endfunction
+
+function! Myedit()
+  edit!
+  return ""
+endfunction
+
+function! MyFn()
+  let file_name = toupper(expand('%:t'))
+  let file_name_prefix = split(file_name, '\.')[0]
+  let file_name_pieces = join(split(file_name_prefix, '_'), ' ')
+  return file_name_pieces
+endfunction
+
+function! MyTime()
+  return strftime('%Y%m%d')
+endfunction
+
+function! MyFnTime()
+  let fn = MyFn()
+  let time = strftime('%Y%m%d')
+  return join([fn, time], ', ')
+endfunction
+
+
+
+" -- plugin manager pathogen.vim
+" https://github.com/tpope/vim-pathogen
+" mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+" curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+" set runtimepath^=~/.vim/bundle/xx
+" cd ~/.vim/bundle && git clone git-repo-url
+if has('unix')
+  set runtimepath+=/opt/lnxcli/vim/plugin
+  if filereadable(expand("/opt/lnxcli/vim/plugin/autoload/pathogen.vim"))
+    execute pathogen#infect()
+  endif
+else
+  execute pathogen#infect()
+endif
+
+
+
+" -- plugin AutoComplPop
+" https://github.com/vim-scripts/AutoComplPop
+"
+" inoremap <c-d> <ESC>:AcpLock<CR>a
+" inoremap <c-b> <ESC>:AcpUnlock<CR>a
+
+
+
+" -- plugin Jenkinsfile-vim-syntax (deprecated)
+" https://github.com/martinda/Jenkinsfile-vim-syntax
+" https://gist.github.com/richardsonlima/fd42bf8f34ca4444cc828a34c8093f4c
+"
+" echo 'au BufNewFile,BufRead Jenkinsfile setf groovy'
+
+
+
+" -- plugin MatchTag
+" https://github.com/gregsexton/MatchTag
+" // cutomize highlight color #39
+" https://github.com/gregsexton/MatchTag/issues/39
+" hi MatchParen ctermbg=NONE ctermfg=10 guibg=NONE guifg=#00ff00 cterm=BOLD gui=BOLD
+" highlight MatchParen ctermfg=Black ctermbg=Yellow guifg=Black guibg=Yellow
+highlight MatchParen ctermbg=NONE guibg=NONE cterm=BOLD gui=BOLD
+
+
+
+" -- plugin Vim-Jinja2-Syntax (deprecated)
+" https://github.com/Glench/Vim-Jinja2-Syntax
+" autocmd BufNewFile,BufRead *.html,*.htm,*.nunjucks,*.nunjs,*.njk call s:SelectHTML()
+" autocmd BufNewFile,BufRead *.jinja2,*.j2,*.jinja,*.tera set ft=jinja
+autocmd BufNewFile,BufRead *.html,*.htm set ft=html
+
+
+
+" -- plugin ack.vim
+" https://github.com/mileszs/ack.vim
+" https://beyondgrep.com/
+" apt-get install ack-grep
+" https://github.com/rking/ag.vim
+" https://github.com/ggreer/the_silver_searcher
+" apt-get install silversearcher-ag
+" silversearcher-ag - very fast grep-like program, alternative to ack-grep
+" Ag is 5-10x faster than Ack
+" :Ack [options] {pattern} [{directories}]
+" :Ack :Ack!
+" :grep :grepadd :lgrep :lgrepadd
+" :Ack  :AckAdd  :LAck  :LAckAdd
+" let g:ackprg='ag --nogroup --nocolor --column'
+" let g:ackprg='ag --vimgrep'
+" ag xx --ignore-dir=static/css --ignore-dir=static/js
+" ag xx --ignore-dir="*.css"
+" ag 'offset \+= 1'
+" Ag will read .gitignore, Ack can not
+"
+" if executable('ag')
+"   let g:ackprg='ag --vimgrep
+"     \ --ignore-dir="*.html"
+"     \ --ignore-dir="*.css"
+"     \ --ignore-dir="*.js"'
+" endif
+"
+" ?    a quick summary of these keys, repeat to close
+" o    to open (same as Enter)
+" O    to open and close the quickfix window
+" go   to preview file, open but maintain focus on ack.vim results
+" t    to open in new tab
+" T    to open in new tab without moving to it
+" h    to open in horizontal split
+" H    to open in horizontal split, keeping focus on the results
+" v    to open in vertical split
+" gv   to open in vertical split, keeping focus on the results
+" q    to close the quickfix window
+cnoreabbrev Ack Ack!
+nnoremap <Leader>a :Ack!<Space>
+vnoremap <Leader>a :Ack!<Space>
+
+let g:ackhighlight = 1
+
+if executable('ag')
+  " let g:ackprg='ag --vimgrep -C5'
+  let g:ackprg='ag --vimgrep'
+endif
+
+
+
+" -- plugin ctrlp.vim
+" https://github.com/ctrlpvim/ctrlp.vim
+" https://github.com/ctrlpvim/ctrlp.vim/blob/master/doc/ctrlp.txt
+" Ctrl + p, :CtrlP :CtrlPBuffer
+" wig wildignore, deaults to ''
+" unlet g:ctrlp_custom_ignore
+" let g:ctrlp_map = '<leader>t'
+" set wildignore+=*/build/**
+" let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+" let g:ctrlp_user_command = 'find %s -type f'
+"
+" vim *.zip
+" Error detected while processing function zip#Write:
+" E344: Can't find directory "_ZIPVIM_" in cdpath
+" not ok: se wig+=*.o,*.obj,*/tmp/*,*.so,*.swp,*.zip
+"     ok: se wig+=*.o,*.obj,*.so,*.swp,*.zip
+let g:ctrlp_use_caching=0
+let g:ctrlp_clear_cache_on_exit=0
+
+" noremap <F2> :CtrlPBuffer<CR>
+" nnoremap <F2> :CtrlPBuffer<CR>
+" inoremap <F2> <ESC>:CtrlPBuffer<CR>
+" vnoremap <F2> <ESC>:CtrlPBuffer<CR>
+noremap <c-q> :CtrlPBuffer<CR>
+nnoremap <c-q> :CtrlPBuffer<CR>
+inoremap <c-q> <ESC>:CtrlPBuffer<CR>
+vnoremap <c-q> <ESC>:CtrlPBuffer<CR>
+
+set wildignore+=*.o,*.obj,*.so,*.swp,*.zip
+set wildignore+=*.bz2,*.gz,*.tar,*.tar.gz,*.tgz,*.xz
+set wildignore+=*.log,*.log.*,*/migrations/00*.py,*.pyc
+let g:ctrlp_custom_ignore={
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$|node_modules|github.com|__public__|deprecated|build|__pycache__|\.idea',
+  \ 'file': '\v\.(exe|so|dll|mp3|mp4)$',
+  \ 'link': 'some_bad_symbolic_links',
+  \ }
+
+
+
+" -- plugin dragvisuals.vim
+" mkdir ~/.vim/bundle/misc/plugin/ && cd ~/.vim/bundle/misc/plugin/
+" https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/
+" https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/dragvisuals.vim
+" https://www.youtube.com/watch?v=aHm36-na4-4
+" vnoremap K xkP`[V`]
+" vnoremap U xp`[V`]
+" vnoremap L >gv
+" vnoremap H <gv
+" runtime plugin/dragvisuals.vim
+" let g:DVB_TrimWS=1
+"
+" // vnoremap doesn't work, use vmap instead
+" vnoremap <expr> <C-h> DVB_Drag('left')
+" vnoremap <expr> <C-l> DVB_Drag('right')
+" vnoremap <expr> <C-i> DVB_Drag('up')
+" vnoremap <expr> <C-o> DVB_Drag('down')
+" vnoremap <expr> O DVB_Duplicate()
+"
+" Shift + O -> duplicate -> Shift + I -> insert
+" // choose the short length of column, or just first column
+" Shift + O -> duplicate -> Shift + $ -> Shift + A -> append
+vmap <expr> <C-h> DVB_Drag('left')
+vmap <expr> <C-l> DVB_Drag('right')
+vmap <expr> <C-i> DVB_Drag('up')
+vmap <expr> <C-o> DVB_Drag('down')
+vmap <expr> O DVB_Duplicate()
+
+
+
+" -- plugin emmet-vim
+" https://github.com/mattn/emmet-vim
+" https://raw.githubusercontent.com/mattn/emmet-vim/master/TUTORIAL
+" Enable just for html/css
+" let g:user_emmet_install_global=0
+" autocmd FileType html,css EmmetInstall
+" let g:user_emmet_mode='n'
+" let g:user_emmet_mode='inv'
+" let g:user_emmet_mode='a'
+" let g:user_emmet_leader_key='<C-Y>'
+" Visual mode        -> Ctrl + y + , -> Tag (* inline)
+" Visual mode        -> Ctrl + y + m -> Merge Lines
+" Insert/Normal mode -> Ctrl + y + / -> Toggle Comment
+" Insert/Normal mode -> Ctrl + y + n -> Go to the Next Edit Point
+" Insert/Mormal mode -> Ctrl + y + N -> Go to the Previous Edit Point
+" // Google 7-awesome-emmet-html-time-saving-tips
+" 1. Skip the div
+" div.container == .container
+" .wrap>ul.list>.sites == div.wrap>ul.list>li.sites
+" 2. Chain abbreviations with DOM navigation
+" > child, + sibling, ^ climb-up
+" .outer>.inner>h1+p, .wrap>p>a^p, .wrap>p>em>a^^p
+" 3. Use grouping to simplify your structure
+" (.one>h1)+(.two>h1), (section>.wrap>h1>p>a)+(section>.wrap>p+p)
+" 4. Insert text and attributes
+" h1{Heading}+p{lorem ipsum}, a[href="http://xx.com/"]{XX}
+" 5. Multiple class names on a single item
+" .one.two.three
+" 6. Multiplication
+" ul>li*3, (section>.wrap)*2
+" 7. Automatic numbering
+" ul>li.item${item $$}*3
+let g:user_emmet_leader_key='<Leader>'
+let g:user_emmet_mode='nv'
+
+
+
+" -- plugin indentLine
+" https://github.com/Yggdroot/indentLine
+" https://github.com/Yggdroot/indentLine/issues/25
+" https://github.com/nathanaelkane/vim-indent-guides/issues/23
+" https://github.com/nathanaelkane/vim-indent-guides/issues/97
+" :IndentLinesToggle toggles lines on and off
+" let g:indentLine_enabled=0
+" let g:indentLine_setConceal=0
+" let g:indentLine_setColors=1
+" let g:indentLine_color_term=239
+" let g:indentLine_indentLevel=10
+" let g:indentLine_fileType=['c', 'cpp', 'python']
+" let g:indentLine_fileTypeExclude=['html', 'text', 'sh']
+" set t_Co=256
+" set t_Co=8
+let g:indentLine_char='|'
+let g:indentLine_first_char='|'
+let g:indentLine_showFirstIndentLevel=1
+let g:indentLine_setColors=1
+let g:indentLine_color_term=2
+let g:indentLine_fileType=['c', 'java', 'php', 'python']
+
+
+
+" -- plugin nerdtree
+" https://github.com/scrooloose/nerdtree
+" https://github.com/preservim/nerdtree
+" https://github.com/preservim/nerdtree/blob/master/doc/NERDTree.txt
+" :NERDTree
+" :NERDTreeClose
+" :NERDTreeToggle
+" :NERDTreeFind
+" autocmd VimEnter * NERDTree
+" autocmd BufEnter * NERDTreeMirror
+" autocmd VimEnter * wincmd w
+" Shift + I
+" let NERDTreeIgnore=['\.pyc$', '\.pyo$']
+" let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.git$']
+" let g:NERDTreeWinSize=31 // defaults to 31
+"
+" noremap <F3> :NERDTreeToggle<CR>
+" nnoremap <F3> :NERDTreeToggle<CR>
+" inoremap <F3> <ESC>:NERDTreeToggle<CR>
+" vnoremap <F3> <ESC>:NERDTreeToggle<CR>
+" noremap <F4> :NERDTreeFind<CR>
+" nnoremap <F4> :NERDTreeFind<CR>
+" inoremap <F4> <ESC>:NERDTreeFind<CR>
+" vnoremap <F4> <ESC>:NERDTreeFind<CR>
+" noremap <F9> :NERDTreeFind<CR>
+" nnoremap <F9> :NERDTreeFind<CR>
+" inoremap <F9> <ESC>:NERDTreeFind<CR>
+" vnoremap <F9> <ESC>:NERDTreeFind<CR>
+"
+noremap <c-x> :NERDTreeToggle<CR>
+nnoremap <c-x> :NERDTreeToggle<CR>
+inoremap <c-x> <ESC>:NERDTreeToggle<CR>
+vnoremap <c-x> <ESC>:NERDTreeToggle<CR>
+noremap <c-z> :NERDTreeFind<CR>
+nnoremap <c-z> :NERDTreeFind<CR>
+inoremap <c-z> <ESC>:NERDTreeFind<CR>
+vnoremap <c-z> <ESC>:NERDTreeFind<CR>
+" noremap <c-q> :NERDTreeFind<CR>
+" nnoremap <c-q> :NERDTreeFind<CR>
+" inoremap <c-q> <ESC>:NERDTreeFind<CR>
+" vnoremap <c-q> <ESC>:NERDTreeFind<CR>
+let NERDTreeShowHidden=1
+let NERDTreeAutoDeleteBuffer=1
+let NERDTreeMinimalUI=1
+let NERDTreeMinimalMenu=1
+let NERDTreeDirArrowExpandable="+"
+let NERDTreeDirArrowCollapsible="-"
+let NERDTreeIgnore=['^node_modules$', '^\.git$', '^__pycache__$', '^\.idea$']
+let NERDTreeCaseSensitiveSort=1
+" let g:NERDTreeWinSize=41
+let g:NERDTreeWinSize=31
+
+
+
+" -- plugin tabular
+" https://github.com/godlygeek/tabular
+" :Tabularize /{pattern}
+" :Tab /=
+" :Tab/|
+" VISUAL -> '<,'>Tab /=
+" vi} -> :Tab/:
+" vi} -> :Tab/:\zs
+" let mapleader=','
+" if exists(":Tabularize")
+"   nmap <Leader>a= :Tabularize /=<CR>
+"   vmap <Leader>a= :Tabularize /=<CR>
+"   nmap <Leader>a: :Tabularize /:\zs<CR>
+"   vmap <Leader>a: :Tabularize /:\zs<CR>
+" endif
+
+
+
+" -- plugin tagbar
+" https://github.com/majutsushi/tagbar
+" :TagbarToggle
+" let g:tagbar_sort=1
+" Defaults to 1, 1 by name, 0 by order
+"
+" pacman -S ctags
+nnoremap <F8> :TagbarToggle<CR>
+let g:tagbar_sort=0
+
+
+
+" -- plugin tlib_vim
+" SnipMate depends on vim-addon-mw-utils and tlib
+" https://github.com/tomtom/tlib_vim
+
+
+
+" -- plugin typescript-vim
+" https://github.com/leafgarland/typescript-vim
+
+
+
+" -- plugin vmath.vim
+" https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/
+" https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/vmath.vim
+xmap <silent><expr>  ++  VMATH_YankAndAnalyse()
+nmap <silent>        ++  vip++
+
+
+
+" -- plugin vim-addon-mw-utils
+" SnipMate depends on vim-addon-mw-utils and tlib
+" https://github.com/marcweber/vim-addon-mw-utils
+
+
+
+" -- plugin vim-commentary
+" https://github.com/tpope/vim-commentary
+" https://github.com/tpope/vim-commentary/issues/40
+" :set filetype?, :se ft?
+" gc{motion}, gcc, {Visual}gc, gc
+"
+" autocmd FileType puppet setlocal commentstring=#\ %s
+autocmd FileType apache setlocal commentstring=#\ %s
+autocmd FileType c setlocal commentstring=//\ %s
+autocmd FileType cfg setlocal commentstring=#\ %s
+autocmd FileType conf setlocal commentstring=#\ %s
+autocmd FileType cpp setlocal commentstring=//\ %s
+autocmd FileType crontab setlocal commentstring=#\ %s
+autocmd FileType dockerfile setlocal commentstring=#\ %s
+autocmd FileType dosini setlocal commentstring=#\ %s
+autocmd FileType eruby setlocal commentstring=<!--\ %s\ -->
+autocmd FileType expect setlocal commentstring=#\ %s
+autocmd FileType gitignore setlocal commentstring=\#\ %s
+autocmd FileType go setlocal commentstring=//\ %s
+autocmd FileType html setlocal commentstring=<!--\ %s\ -->
+autocmd FileType java setlocal commentstring=//\ %s
+autocmd FileType javascript.jsx setlocal commentstring={/*\ %s\ */}
+autocmd FileType jinja setlocal commentstring=<!--\ %s\ -->
+autocmd FileType jinja.html setlocal commentstring=<!--\ %s\ -->
+autocmd FileType jproperties setlocal commentstring=#\ %s
+autocmd FileType make setlocal commentstring=\#\ %s
+autocmd FileType markdown setlocal commentstring=<!--\ %s\ -->
+autocmd FileType nginx setlocal commentstring=#\ %s
+autocmd FileType python setlocal commentstring=#\ %s
+autocmd FileType r setlocal commentstring=\#\ %s
+autocmd FileType ruby setlocal commentstring=#\ %s
+autocmd FileType sh setlocal commentstring=#\ %s
+autocmd FileType snippets setlocal commentstring=#\ %s
+autocmd FileType sshconfig setlocal commentstring=#\ %s
+autocmd FileType systemd setlocal commentstring=#\ %s
+autocmd FileType text setlocal commentstring=//\ %s
+autocmd FileType tmux setlocal commentstring=#\ %s
+autocmd FileType toml setlocal commentstring=#\ %s
+autocmd FileType vim setlocal commentstring=\"\ %s
+autocmd FileType vue setlocal commentstring=<!--\ %s\ -->
+autocmd FileType xml setlocal commentstring=<!--\ %s\ -->
+autocmd FileType yaml setlocal commentstring=#\ %s
+autocmd FileType zsh setlocal commentstring=\#\ %s
+
+
+
+" -- plugin vim-easy-align
+" https://github.com/junegunn/vim-easy-align
+"
+" vip ga <Enter> <Enter> * |
+" :EasyAlign[C] (*_) |
+" :EasyAlign *| {'a': 'c'}
+"
+" gaip*{=|space}
+"
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+
+
+" -- plugin vim-ft-go
+" https://github.com/google/vim-ft-go
+
+
+
+" -- plugin vim-fugitive
+" https://github.com/tpope/vim-fugitive
+" %{fugitive#statusline()}
+" :Git :Gstatus, :Gdiff, :Gvdiff, :Glog, :Gbrowse
+
+
+
+" -- plugin vim-gitgutter
+" https://github.com/airblade/vim-gitgutter
+" :GitGutter
+" :GitGutterDisable
+" :GitGutterEnable
+" :GitGutterToggle
+" :GitGutterDebug
+" vim-gitgutter: cannot find git. Please set g:gitgutter_git_executable.
+"
+" vim-gitgutter: exceeded maximum number of signs \
+" (configured by g:gitgutter_max_signs).
+" let g:gitgutter_async = 0
+" let g:gitgutter_highlight_lines = 1
+" gitgutter_max_signs, defaults to 500
+" let g:gitgutter_max_signs=500
+" let g:gitgutter_max_signs=1000
+let g:gitgutter_max_signs=3000
+" When signs take a few seconds to appear
+" Try reducing updatetime, defaults to 400
+"
+" // Signs are color grey #614
+" https://github.com/airblade/vim-gitgutter/issues/614
+" https://github.com/airblade/vim-gitgutter#sign-column
+" highlight! link SignColumn LineNr
+set updatetime=10
+if executable('git')
+  highlight clear SignColumn
+  highlight GitGutterAdd ctermfg=2
+  highlight GitGutterChange ctermfg=3
+  highlight GitGutterDelete ctermfg=1
+  highlight GitGutterChangeDelete ctermfg=4
+else
+  let g:gitgutter_git_executable = '/bin/true'
+  let g:gitgutter_enabled = 0
+endif
+
+
+
+" -- plugin vim-javascript
+" https://github.com/pangloss/vim-javascript
+
+
+
+" -- plugin vim-jsx
+" https://github.com/mxw/vim-jsx
+" By default, only supports files with the .jsx extension
+let g:jsx_ext_required=0
+
+
+
+" -- plugin vim-multiple-cursors
+" https://github.com/terryma/vim-multiple-cursors
+" Ctrl + n
+" v -> Ctrl + n -> i -> xx
+" v -> Ctrl + n -> j/k -> i -> xx
+" v -> Ctrl + n -> Ctrl + n -> .. -> c -> xx
+" v -> Ctrl + n -> Ctrl + n -> .. -> c -> Enter
+
+
+
+" -- plugin vim-snipmate
+" SnipMate depends on vim-addon-mw-utils and tlib
+" https://github.com/garbas/vim-snipmate
+" https://github.com/msanders/snipmate.vim
+" See ~/doc/SnipMate.txt
+let g:snipMate = {'snippet_version' : 0}
+imap <C-E> <Plug>snipMateNextOrTrigger
+smap <C-E> <Plug>snipMateNextOrTrigger
+
+
+
+" -- plugin vim-snippets
+" https://github.com/honza/vim-snippets
+" if : if without else
+" ife: if $1 else $2
+" eif : else if ($1) { .. }
+" el  : else ..
+" wh  : while (cond) ...
+
+
+
+" -- plugin vim-surround
+" https://github.com/tpope/vim-surround
+" cs, ds, yss
+" "Hello world!"      -> cs"'      -> 'Hello world!'
+" 'Hello world!'      -> cs'<q>    -> <q>Hello world!</q>
+" <q>Hello world!</q> -> cst"      -> "Hello world!"
+" "Hello world!"      -> ds"       -> Hello world!
+" Hello world!        -> ysiw]     -> [Hello] world!
+" [Hello] world!      -> cs]{      -> { Hello } world!
+" { Hello } world!    -> yssb/yss) -> ({ Hello } world!)
+" ({ Hello } world!)  -> ds{ds)    -> Hello world!
+" Hello world!        -> ysiw<em>  -> <em>Hello</em> world!
+" VISUAL              -> S<p class="important">
+" viwS'
+
+
+
+" -- plugin vim-vue (deprecated)
+" https://github.com/posva/vim-vue
+" let g:vue_disable_pre_processors=1
+
+
+
+" -- plugin vis
+" https://github.com/vim-scripts/vis
+" :'<,'>B sort
+
+
+
+" -- mapping keys
+" http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_%28Part_1%29
+" http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_%28Part_2%29
+" http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_%28Part_3%29
+" <BS>          Backspace
+" <Tab>         Tab
+" <CR>          Enter
+" <Enter>       Enter
+" <Return>      Enter
+" <Esc>         Escape
+" <Space>       Space
+" <Up>          Up arrow
+" <Down>        Down arrow
+" <Left>        Left arrow
+" <Right>       Right arrow
+" <F1> - <F12>  Function keys 1 to 12
+" #1,#2..#9,#0  Function keys F1 to F9, F10
+" <Insert>      Insert
+" <Del>         Delete
+" <Home>        Home
+" <End>         End
+" <PageUp>      Page-Up
+" <PageDown>    Page-Down
+" <bar>         The '|' character, or '\|'
+
+
+
+" -- plugin
+" // inuse
+" AutoComplPop           https://github.com/vim-scripts/AutoComplPop
+" MatchTag               https://github.com/gregsexton/MatchTag
+" ack.vim                https://github.com/mileszs/ack.vim
+" ctrlp.vim              https://github.com/ctrlpvim/ctrlp.vim
+" dragvisuals.vim        https://github.com/thoughtstream/
+" emmet-vim              https://github.com/mattn/emmet-vim
+" indentLine             https://github.com/Yggdroot/indentLine
+" nerdtree               https://github.com/scrooloose/nerdtree
+" tabular                https://github.com/godlygeek/tabular
+" tagbar                 https://github.com/majutsushi/tagbar
+" tlib_vim               https://github.com/tomtom/tlib_vim
+" typescript-vim         https://github.com/leafgarland/typescript-vim
+" vim-addon-mw-utils     https://github.com/marcweber/vim-addon-mw-utils
+" vim-commentary         https://github.com/tpope/vim-commentary
+" vim-easy-align         https://github.com/junegunn/vim-easy-align
+" vim-ft-go              https://github.com/google/vim-ft-go
+" vim-fugitive           https://github.com/tpope/vim-fugitive
+" vim-gitgutter          https://github.com/airblade/vim-gitgutter
+" vim-javascript         https://github.com/pangloss/vim-javascript
+" vim-jsx                https://github.com/mxw/vim-jsx
+" vim-multiple-cursors   https://github.com/terryma/vim-multiple-cursors
+" vim-pathogen           https://github.com/tpope/vim-pathogen
+" vim-snipmate           https://github.com/garbas/vim-snipmate
+" vim-snippets           https://github.com/honza/vim-snippets
+" vim-surround           https://github.com/tpope/vim-surround
+" vis                    https://github.com/vim-scripts/vis
+" vmath.vim              https://github.com/thoughtstream/
+"
+" // candidate
+" Jenkinsfile-vim-syntax https://github.com/martinda/Jenkinsfile-vim-syntax
+" MatchTagAlways         https://github.com/Valloric/MatchTagAlways
+" Vim-Jinja2-Syntax      https://github.com/Glench/Vim-Jinja2-Syntax
+" YouCompleteMe          https://github.com/Valloric/YouCompleteMe
+" ctrlsf.vim             https://github.com/dyng/ctrlsf.vim
+" gundo.vim              https://github.com/sjl/gundo.vim
+" puppet-syntax-vim      https://github.com/puppetlabs/puppet-syntax-vim
+" syntastic              https://github.com/vim-syntastic/syntastic
+" ultisnips              https://github.com/SirVer/ultisnips
+" vim-easymotion         https://github.com/easymotion/vim-easymotion
+" vim-go                 https://github.com/fatih/vim-go.git
+" vim-puppet             https://github.com/rodjek/vim-puppet
+" vim-vue                https://github.com/posva/vim-vue
+" vimcompletesme         https://github.com/ajh17/vimcompletesme
+" vimux                  https://github.com/benmills/vimux
+"
+" // optional
+" ale                    https://github.com/w0rp/ale
+" editorconfig-vim       https://github.com/editorconfig/editorconfig-vim
+" fzf.vim                https://github.com/junegunn/fzf.vim
+" lightline.vim          https://github.com/itchyny/lightline.vim
+" nerdcommenter          https://github.com/scrooloose/nerdcommenter
+" tsuquyomi              https://github.com/Quramy/tsuquyomi
+" vim-eunuch             https://github.com/tpope/vim-eunuch
+" vim-matchup            https://github.com/andymass/vim-matchup
+" vim-tsx                https://github.com/ianks/vim-tsx
+" yats.vim               https://github.com/HerringtonDarkholme/yats.vim
+"
+" // not my case
+" Vundle.vim             https://github.com/VundleVim/Vundle.vim
+" vim-plug               https://github.com/junegunn/vim-plug
+" ag.vim                 https://github.com/rking/ag.vim
+" base16-vim             https://github.com/chriskempson/base16-vim
+" closetag.vim           https://github.com/vim-scripts/closetag.vim
+" csv.vim                https://github.com/chrisbra/csv.vim
+" deoplete               https://github.com/Shougo/deoplete.nvim
+" delimitMate            https://github.com/Raimondi/delimitMate
+" html5.vim              https://github.com/othree/html5.vim
+" jedi-vim               https://github.com/davidhalter/jedi-vim
+" minibufexpl            https://github.com/fholgado/minibufexpl.vim
+" neocomplete.vim        https://github.com/Shougo/neocomplete.vim
+" numbers.vim            https://github.com/myusuf3/numbers.vim
+" python-mode            https://github.com/python-mode/python-mode
+" snipmate.vim           https://github.com/msanders/snipmate.vim
+" splitjoin.vim          https://github.com/AndrewRadev/splitjoin.vim
+" supertab               https://github.com/ervandew/supertab
+" taglist                https://github.com/vim-scripts/taglist.vim
+" tcomment_vim           https://github.com/tomtom/tcomment_vim
+" tern_for_vim           https://github.com/ternjs/tern_for_vim
+" ultisnips              https://github.com/SirVer/ultisnips
+" unite.vim              https://github.com/Shougo/unite.vim
+" vim-airline            https://github.com/vim-airline/vim-airline
+" vim-autoclose          https://github.com/Townk/vim-autoclose
+" vim-better-whitespace  https://github.com/ntpeters/vim-better-whitespace
+" vim-colors-solarized   https://github.com/altercation/vim-colors-solarized
+" vim-hug-neovim-rpc     https://github.com/roxma/vim-hug-neovim-rpc
+" vim-indent-guides      https://github.com/nathanaelkane/vim-indent-guides
+" vim-javacomplete2      https://github.com/artur-shaik/vim-javacomplete2
+" vim-javascript-syntax  https://github.com/jelera/vim-javascript-syntax
+" vim-json               https://github.com/elzr/vim-json
+" vim-markdown           https://github.com/plasticboy/vim-markdown
+" vim-markdown           https://github.com/tpope/vim-markdown
+" vim-rails              https://github.com/tpope/vim-rails
+" vim-sensible           https://github.com/tpope/vim-sensible
+" vim-signify            https://github.com/mhinz/vim-signify
+" vim-snipmate           https://github.com/garbas/vim-snipmate
+" vim-tmux-navigator     https://github.com/christoomey/vim-tmux-navigator
+" vim-wordy              https://github.com/reedes/vim-wordy
+"
+" // more
+" http://vimawesome.com/

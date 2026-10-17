@@ -1,0 +1,30 @@
+snippet 199
+	def changeme(request):
+		result, status = pyutil.construct_api_result(199)
+
+		return JsonResponse(result, status=status)
+
+
+# cutf8
+snippet utf
+# -*- coding: utf-8 -*-
+	from __future__ import unicode_literals
+
+
+snippet json
+	try: import simplejson as json
+	except ImportError: import json
+
+
+snippet time
+	time.strftime('%Y-%m-%d %H:%M:%S')
+
+
+snippet main
+	if __name__ == '__main__':
+
+
+snippet encoding
+	if sys.getdefaultencoding() != 'utf-8':
+		reload(sys)
+		sys.setdefaultencoding('utf-8')
