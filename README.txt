@@ -1,3 +1,5 @@
+lnxcli - linux command line
+
 +-----------------------------------------+
 |  +-----------------------------------+  |
 |  |  +-----------------------------+  |  |
@@ -28,6 +30,6 @@ git ------- https://github.com/git/git
 tmux ------ https://github.com/tmux/tmux
 vim ------- https://github.com/vim/vim
 
-// usage
+// -- usage
 // ~/.bashrc
 [ -f /opt/lnxcli/env.sh ] && source /opt/lnxcli/env.sh
