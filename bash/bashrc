@@ -54,3 +54,11 @@ alias aps="pacman -Ss"
 alias apsi="pacman -Si"
 alias apss="pacman -Ss"
 alias apu="pacman -Syu"
+
+export PATH="${PATH}:/opt/lnxcli/path:${HOME}/path"
+
+# -- xfce4-terminal
+# disable ctrl+s, ctrl+q
+stty -ixon
+stty stop undef
+stty start undef

@@ -97,7 +97,9 @@ set vb t_vb=
 " -- basic settings
 " for security
 if !isdirectory("/root/.tmp")
-  call mkdir("/root/.tmp", "p", 0o700)
+  " the 0o prefix for octal numbers was introduced in vim 8.2 (patch 8.2.0886)
+  " call mkdir("/root/.tmp", "p", 0o700)
+  call mkdir("/root/.tmp", "p", 0700)
 endif
 let $TMPDIR="/root/.tmp"
 
