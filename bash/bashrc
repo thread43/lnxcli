@@ -62,3 +62,26 @@ export PATH="${PATH}:/opt/lnxcli/path:${HOME}/path"
 stty -ixon
 stty stop undef
 stty start undef
+
+alias l="ls -rtlh --color=auto"
+alias ll="ls -lh --color=auto"
+alias lll="ls -lhAF --color=auto"
+alias lls="ls -l |sort -f -k9,9"
+alias llhs="ls -lh |sort -f -k9,9"
+alias ls="ls -F --color=auto"
+alias lsS="ls -F -rlSh"
+alias lsd="ls -F --color -lh --group-directories-first"
+alias lss="ls -F |sort -f"
+alias lsw="ls -F -1 |wc -l"
+
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ......="cd ../../../../.."
+alias .1="cd .."
+alias .2="cd ../.."
+alias .3="cd ../../.."
+alias .4="cd ../../../.."
+alias .5="cd ../../../../.."
+alias .6="cd ../../../../../.."

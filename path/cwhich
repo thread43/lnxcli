@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+if [ ! $# -eq 1 ]; then
+  echo "usage: $0 {keyword}"
+else
+  file="$(which $1)"
+  cat "$file"
+fi

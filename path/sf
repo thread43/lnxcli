@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -x
+
+if [ ! $# -eq 2 ]; then
+  echo "usage: $0 {html|js|txt} {keyword}"
+  exit
+fi
+
+# find . -name "*$1" -exec grep -i -Hn --color=auto "$2" {} \;
+# find . -name "libs" -prune -o -name "*$1" -exec grep -i -Hn --color=auto "$2" {} \;
+#
+# find . \( -name "assets" -o -name "build" -o -name "libs" -o -name "node_modules" -o -name "site-packages" -o -name "static" \) -prune -o -name "*$1" -exec grep -i -Hn --color=auto "$2" {} \;
+#
+find . \( -name "assets" -o -name "build" -o -name "node_modules" -o -name "site-packages" -o -name "static" \) -prune -o -name "*$1" -exec grep -i -Hn --color=auto "$2" {} \;

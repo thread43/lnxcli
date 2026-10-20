@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -x
+
+if [ ! $# -eq 1 ]; then
+  echo "usage: $0 {keyword}"
+  exit
+fi
+
+ps axu |grep -v -E "grep|sk" |grep -i --color=auto "$1"
+
+ps axu |grep $@ |grep -v -E "grep" |awk '{print $2}' |xargs kill -9
+# ps axu |grep $@ |grep -v -E "grep" |awk '{print $2}' |xargs sudo kill -9
+# ps axu |grep $@ |grep -v -E "grep|sk" |awk '{print $2}' |xargs sudo kill -9

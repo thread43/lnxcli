@@ -1,0 +1,66 @@
+#!/bin/bash
+
+echo "--"
+
+begun_at=$(date '+%F %T')
+begun_at_ts=$(date +%s)
+echo "-- begun at, ${begun_at}"
+
+if [ "$#" -eq 0 ]; then
+  echo "-- invalid parameter!!!"
+  exit
+fi
+
+pathname=$1
+if [ ! -f ${pathname} ]; then
+  echo "-- pathname doesn't exist!!!"
+  exit
+fi
+
+if [ $(echo ${pathname} |grep ".tar.zip.gpg" |grep -v grep |wc -l) -eq 0 ]; then
+  echo "-- invalid pathname!!!"
+  exit
+fi
+
+currentpath=$(dirname ${pathname})
+target=$(basename ${pathname} |sed "s/.tar.zip.gpg//")
+echo "-- currentpath is [${currentpath}]"
+echo "-- target is [${target}]"
+
+echo "-- pwd is [$(pwd)]"
+cd ${currentpath}
+echo "-- after cd, pwd is [$(pwd)]"
+
+# p4zf="/root/.tx/p4z"
+# p4gf="/root/.tx/p4g"
+p4zf="/root/p4z"
+p4gf="/root/p4g"
+if [ ! -f ${p4zf} ] || [ ! -f ${p4gf} ]; then
+  echo "-- either [${p4zf}] or [${p4gf}] doesn't exist!!!"
+  exit
+fi
+p4z=$(cat ${p4zf})
+p4g=$(cat ${p4gf})
+if [ -z ${p4z} ] || [ -z ${p4g} ]; then
+  echo "-- either [${p4z}] or [${p4g}] is empty string!!!"
+  exit
+fi
+
+if [ -f ${target} ] || [ -f ${target}.tar ] || [ -f ${target}.tar.zip ]; then
+  echo "-- either [${target}] or [${target}.tar] or [${target}.tar.zip] already exists!!!"
+  exit
+fi
+
+gpg --batch --passphrase "${p4g}" ${target}.tar.zip.gpg
+unzip -P "${p4z}" ${target}.tar.zip
+tar xf ${target}.tar
+rm ${target}.tar ${target}.tar.zip
+
+ended_at=$(date '+%F %T')
+ended_at_ts=$(date +%s)
+echo "-- ended at, ${ended_at}"
+
+time_elapsed=$((${ended_at_ts}-${begun_at_ts}))
+echo "-- time elapsed, ${time_elapsed} secs"
+
+echo "--"
